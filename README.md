@@ -13,11 +13,11 @@ This project sends weekly Fathom Analytics reports to a Discord channel.
 
 1. Clone the repository:
    ```bash
-   gh repo clone xyflow/fathom-analytics-report
+   gh repo clone xyflow/fathom-discord-roundup
    ```
 2. Navigate to the project directory:
    ```bash
-   cd fathom-analytics-report
+   cd fathom-discord-roundup
    ```
 3. Install dependencies:
    ```bash
