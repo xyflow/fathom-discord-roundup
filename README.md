@@ -1,4 +1,4 @@
-# Fathom Analytics Report
+# Fathom Analytics Reporting for Discord
 
 This project sends weekly Fathom Analytics reports to a Discord channel.
 
