@@ -87,7 +87,7 @@ async function generateReport() {
       aggregates: "pageviews",
       field_grouping: "pathname",
       sort_by: "pageviews:desc",
-      limit: "20",
+      limit: "15",
       date_from: date_from_before,
       date_to: date_to_before,
       timezone: "UTC",
@@ -154,7 +154,7 @@ async function generateReport() {
             {
               name: "🔝 Top Pages",
               value: lastPages
-                .slice(0, 10)
+                .slice(0, 15)
                 .map((page) => {
                   const lastViews = Number(page.pageviews);
                   const prevViews = beforeMap.get(page.pathname) || 0;
@@ -167,9 +167,6 @@ async function generateReport() {
                 .join("\n"),
             },
           ],
-          footer: {
-            text: "Generated at " + new Date().toUTCString(),
-          },
         },
       ],
     };
