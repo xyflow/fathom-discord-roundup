@@ -1,6 +1,13 @@
 # Fathom Analytics Report
 
-This project sends weekly Fathom Analytics reports to a Discord channel. It fetches data from the Fathom Analytics API, compiles a weekly report on popular pages and total pageviews, and posts the report via a Discord webhook.
+This project sends weekly Fathom Analytics reports to a Discord channel.
+
+## Project Overview
+
+- **Data Retrieval:** The script uses [Fathom Analytics](https://usefathom.com) Aggregations API to obtain weekly analytics data.
+- **Report Generation:** It calculates the number of pageviews for the previous week, compares them to the week before, and highlights the top pages.
+- **Notification:** The final report is sent to a Discord channel using a webhook.
+- **Automation:** A GitHub Actions workflow (configured via a YAML file) can run the script on a schedule (every Tuesday at 9 AM UTC) or be triggered manually.
 
 ## Installation
 
@@ -26,11 +33,19 @@ This project sends weekly Fathom Analytics reports to a Discord channel. It fetc
 Create a `.env` file in the project root directory and add your credentials:
 
 ```env
+DISCORD_WEBHOOK_URL=your_discord_webhook
 FATHOM_API_TOKEN=your_fathom_api_token
 FATHOM_SITE_ID=your_fathom_site_id
 ```
 
-Also, update the `WEBHOOK_URL` in `index.js` as needed.
+## Creating a Discord Webhook
+
+1. Open Discord and navigate to the channel where you want to post the report.
+2. Click the settings icon (gear) next to the channel name.
+3. Select **Integrations**, then click on **Webhooks**.
+4. Click **New Webhook** and give it a name (e.g., "Fathom Report Bot").
+5. Copy the **Webhook URL** and paste it into your `.env` file as the `DISCORD_WEBHOOK_URL`.
+6. Save the changes.
 
 ## Usage
 
