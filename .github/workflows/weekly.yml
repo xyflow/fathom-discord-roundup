@@ -20,6 +20,7 @@ jobs:
 
       - name: Run weekly report
         env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
           FATHOM_API_TOKEN: ${{ secrets.FATHOM_API_TOKEN }}
           FATHOM_SITE_ID: ${{ secrets.FATHOM_SITE_ID }}
         run: node index.js
