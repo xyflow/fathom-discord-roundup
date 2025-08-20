@@ -4,7 +4,8 @@ const fetch = require("node-fetch");
 // Configuration
 const DISCORD_WEBHOOK_URL = process.env.DISCORD_WEBHOOK_URL;
 const FATHOM_API_TOKEN = process.env.FATHOM_API_TOKEN;
-const FATHOM_SITE_ID = process.env.FATHOM_SITE_ID;
+const REACTFLOW_SITE_ID = process.env.REACTFLOW_SITE_ID;
+const SVELTEFLOW_SITE_ID = process.env.SVELTEFLOW_SITE_ID;
 
 // Date range helpers
 function getPreviousWeekRange() {
@@ -56,8 +57,8 @@ async function fetchAggregation(params) {
   return response.json();
 }
 
-// Generate the report
-async function generateReport() {
+// Generate the report for a specific site
+async function generateSiteReport(siteId, siteName) {
   try {
     const lastWeek = getPreviousWeekRange();
     const weekBefore = getWeekBeforeRange();
@@ -69,7 +70,7 @@ async function generateReport() {
     // Fetch popular pages for last week
     const popParamsLast = new URLSearchParams({
       entity: "pageview",
-      entity_id: FATHOM_SITE_ID,
+      entity_id: siteId,
       aggregates: "pageviews",
       field_grouping: "pathname",
       sort_by: "pageviews:desc",
@@ -83,7 +84,7 @@ async function generateReport() {
     // Fetch popular pages for week before last
     const popParamsBefore = new URLSearchParams({
       entity: "pageview",
-      entity_id: FATHOM_SITE_ID,
+      entity_id: siteId,
       aggregates: "pageviews",
       field_grouping: "pathname",
       sort_by: "pageviews:desc",
@@ -101,7 +102,7 @@ async function generateReport() {
     // Fetch total hits for last week
     const totParamsLast = new URLSearchParams({
       entity: "pageview",
-      entity_id: FATHOM_SITE_ID,
+      entity_id: siteId,
       aggregates: "pageviews",
       date_from: date_from_last,
       date_to: date_to_last,
@@ -116,7 +117,7 @@ async function generateReport() {
     // Fetch total hits for week before last
     const totParamsBefore = new URLSearchParams({
       entity: "pageview",
-      entity_id: FATHOM_SITE_ID,
+      entity_id: siteId,
       aggregates: "pageviews",
       date_from: date_from_before,
       date_to: date_to_before,
@@ -132,43 +133,53 @@ async function generateReport() {
     const totalDelta = totalLast - totalBefore;
     const totalDeltaSign = totalDelta > 0 ? "+" : "";
 
-    // Compile the final message
-    const message = {
-      username: "weekly fathom roundup bot",
-      embeds: [
+    return {
+      title: `${siteName} Traffic Report`,
+      fields: [
         {
-          title: "reactflow.dev Traffic Report",
-          fields: [
-            {
-              name: "🌐 Total Pageviews",
-              value: `${totalLast.toLocaleString()} (${totalDeltaSign}${totalDelta.toLocaleString()})`,
-              inline: true,
-            },
-            {
-              name: "📅 Date Range",
-              value: `${date_from_last.split(" ")[0]} to ${
-                date_to_last.split(" ")[0]
-              }`,
-              inline: true,
-            },
-            {
-              name: "🔝 Top Pages",
-              value: lastPages
-                .slice(0, 15)
-                .map((page) => {
-                  const lastViews = Number(page.pageviews);
-                  const prevViews = beforeMap.get(page.pathname) || 0;
-                  const delta = lastViews - prevViews;
-                  const deltaSign = delta > 0 ? "+" : "";
-                  return `→ ${
-                    page.pathname
-                  }: ${lastViews.toLocaleString()} (${deltaSign}${delta.toLocaleString()})`;
-                })
-                .join("\n"),
-            },
-          ],
+          name: "🌐 Total Pageviews",
+          value: `${totalLast.toLocaleString()} (${totalDeltaSign}${totalDelta.toLocaleString()})`,
+          inline: true,
+        },
+        {
+          name: "📅 Date Range",
+          value: `${date_from_last.split(" ")[0]} to ${
+            date_to_last.split(" ")[0]
+          }`,
+          inline: true,
+        },
+        {
+          name: "🔝 Top Pages",
+          value: lastPages
+            .slice(0, 15)
+            .map((page) => {
+              const lastViews = Number(page.pageviews);
+              const prevViews = beforeMap.get(page.pathname) || 0;
+              const delta = lastViews - prevViews;
+              const deltaSign = delta > 0 ? "+" : "";
+              return `→ ${
+                page.pathname
+              }: ${lastViews.toLocaleString()} (${deltaSign}${delta.toLocaleString()})`;
+            })
+            .join("\n"),
         },
       ],
+    };
+  } catch (error) {
+    throw new Error(`Failed to generate report for ${siteName}: ${error.message}`);
+  }
+}
+
+// Generate combined report for both sites
+async function generateReport() {
+  try {
+    const reactflowEmbed = await generateSiteReport(REACTFLOW_SITE_ID, "reactflow.dev");
+    const svelteflowEmbed = await generateSiteReport(SVELTEFLOW_SITE_ID, "svelteflow.dev");
+
+    // Compile the final message with both sites as separate embeds
+    const message = {
+      username: "weekly fathom roundup bot",
+      embeds: [reactflowEmbed, svelteflowEmbed],
     };
 
     return message;
