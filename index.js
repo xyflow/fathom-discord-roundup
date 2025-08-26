@@ -166,15 +166,23 @@ async function generateSiteReport(siteId, siteName) {
       ],
     };
   } catch (error) {
-    throw new Error(`Failed to generate report for ${siteName}: ${error.message}`);
+    throw new Error(
+      `Failed to generate report for ${siteName}: ${error.message}`
+    );
   }
 }
 
 // Generate combined report for both sites
 async function generateReport() {
   try {
-    const reactflowEmbed = await generateSiteReport(REACTFLOW_SITE_ID, "reactflow.dev");
-    const svelteflowEmbed = await generateSiteReport(SVELTEFLOW_SITE_ID, "svelteflow.dev");
+    const reactflowEmbed = await generateSiteReport(
+      REACTFLOW_SITE_ID,
+      "reactflow.dev"
+    );
+    const svelteflowEmbed = await generateSiteReport(
+      SVELTEFLOW_SITE_ID,
+      "svelteflow.dev"
+    );
 
     // Compile the final message with both sites as separate embeds
     const message = {
