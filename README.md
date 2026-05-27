@@ -2,10 +2,6 @@
 
 This project sends weekly Fathom Analytics reports to a Discord channel.
 
-## Overview
-
-The script pulls weekly analytics data from the Fathom Analytics Aggregations API, then compares pageviews from the most recent week to the previous one while identifying the top-performing pages. It formats this into a report and sends it to a Discord channel via a webhook. A GitHub Actions workflow runs the script on a schedule every Tuesday at 9 AM UTC, with the option to trigger it manually as needed.
-
 ## Installation
 
 1. Clone the repository:
